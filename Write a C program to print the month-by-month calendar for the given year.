@@ -1,0 +1,72 @@
+#include <stdio.h>
+
+// Gregorian rule: divisible by 4, except century years unless divisible by 400
+int isLeapYear(int year) {
+    return ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0));
+}
+
+// Returns number of days in a given month (1 = Jan, ..., 12 = Dec)
+int getDaysInMonth(int month, int year) {
+    int daysInMonth[] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    if (month == 2 && isLeapYear(year)) {
+        return 29;
+    }
+    return daysInMonth[month];
+}
+
+// Returns day of week for a given date: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+int getDayOfWeek(int day, int month, int year) {
+    static int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    if (month < 3) {
+        year -= 1;
+    }
+    return (year + year / 4 - year / 100 + year / 400 + t[month - 1] + day) % 7;
+}
+
+void printCalendar(int year) {
+    const char *months[] = {
+        "", "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    };
+
+    printf("\n==================== CALENDAR - %d ====================\n", year);
+
+    for (int month = 1; month <= 12; month++) {
+        int days = getDaysInMonth(month, year);
+        int startDay = getDayOfWeek(1, month, year);
+
+        printf("\n------------ %s %d ------------\n", months[month], year);
+        printf("Sun  Mon  Tue  Wed  Thu  Fri  Sat\n");
+
+        // Leading spaces before the 1st day of the month
+        for (int i = 0; i < startDay; i++) {
+            printf("     ");
+        }
+
+        // Print each day of the month
+        for (int day = 1; day <= days; day++) {
+            printf("%3d  ", day);
+            if ((day + startDay) % 7 == 0) {
+                printf("\n");
+            }
+        }
+
+        // Ensure a newline at the end of the month
+        if ((days + startDay) % 7 != 0) {
+            printf("\n");
+        }
+    }
+}
+
+int main() {
+    int year;
+
+    printf("Enter the year: ");
+    if (scanf("%d", &year) != 1 || year < 1) {
+        printf("Please enter a valid positive year.\n");
+        return 1;
+    }
+
+    printCalendar(year);
+    return 0;
+}
