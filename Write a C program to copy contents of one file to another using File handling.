@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main() {
+    FILE *srcFile, *destFile;
+    char srcName[100], destName[100];
+    int ch; // Use int (not char) so EOF (-1) is detected reliably
+
+    // Get source and destination file names from the user
+    printf("Enter source filename: ");
+    scanf("%99s", srcName);
+
+    printf("Enter destination filename: ");
+    scanf("%99s", destName);
+
+    // Open source file in read mode ("r")
+    srcFile = fopen(srcName, "r");
+    if (srcFile == NULL) {
+        printf("Error: Cannot open source file '%s'.\n", srcName);
+        return 1;
+    }
+
+    // Open destination file in write mode ("w")
+    destFile = fopen(destName, "w");
+    if (destFile == NULL) {
+        printf("Error: Cannot open or create destination file '%s'.\n", destName);
+        fclose(srcFile);
+        return 1;
+    }
+
+    // Read character by character from source and write to destination
+    while ((ch = fgetc(srcFile)) != EOF) {
+        fputc(ch, destFile);
+    }
+
+    printf("Contents of '%s' copied to '%s' successfully.\n", srcName, destName);
+
+    // Close both files
+    fclose(srcFile);
+    fclose(destFile);
+
+    return 0;
+}
